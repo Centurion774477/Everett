@@ -1,0 +1,1 @@
+Everett makes handling config files with sessionStorage easy. Everett is part of [French Press CoffeeScript](https://github.com/Centurion774477/Kahvi) and is related to [Mojave](https://github.com/Centurion774477/Mojave)
