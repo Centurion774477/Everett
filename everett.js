@@ -5,11 +5,11 @@ class Everett {
 
     #getConfig() {
         return JSON.parse(
-            localStorage.getItem(Everett.config)
+            sessionStorage.getItem(Everett.config)
         );
     }
 
-    static async enabled(setting) {
+    static enabled(setting) {
         const configData = this.#getConfig();
 
         if (configData[setting] == null) {
@@ -23,11 +23,11 @@ class Everett {
         }
     }
 
-    static async disabled(setting) {
+    static disabled(setting) {
         return this.enabled(setting);
     }
 
-    static async value(setting) {
+    static value(setting) {
         const configData = this.#getConfig();
 
         if (configData[setting] == null) {
@@ -37,7 +37,7 @@ class Everett {
         return configData[setting];
     }
 
-    static async enable(setting) {
+    static enable(setting) {
         const configData = this.#getConfig();
 
         if (configData[setting] == null) {
@@ -47,7 +47,7 @@ class Everett {
         configData[setting] = true;
 
         try {
-            localStorage.setItem(Everett.config, JSON.stringify(configData));
+            sessionStorage.setItem(Everett.config, JSON.stringify(configData));
         } catch (error) {
             if (error.name === "QuotaExceededError") {
                 throw new Error(
@@ -58,7 +58,7 @@ class Everett {
         return true;
     }
 
-    static async disable(setting) {
+    static disable(setting) {
         const configData = this.#getConfig();
 
         if (configData[setting] == null) {
@@ -80,7 +80,7 @@ class Everett {
         return true;
     }
 
-    static async add(settings) {
+    static add(settings) {
         const config = this.#getConfig();
 
         const updated = {...config, ...settings};
@@ -99,7 +99,7 @@ class Everett {
     }
 
     static initiate() {
-        if (localStorage.getItem(Everett.config) != null) {
+        if (sessionStorage.getItem(Everett.config) != null) {
             return;
         }
 
@@ -109,6 +109,30 @@ class Everett {
             if (error.name === "QuotaExceededError") {
                 throw new Error(
                     "Everett.enable: storage quota exceeded; you have exhausted sessionStorage's size limit."
+                );
+            }
+        }
+
+        return true;
+    }
+
+    static cache(key, value, stringifyData = false) {
+        if (sessionStorage.getItem(key) != null) {
+            return null;
+        }
+
+        if (stringifyData === true) {
+            value = JSON.stringify(value);
+        }
+
+        try {
+            sessionStorage.setItem(key, value);
+        } catch (error) {
+            if (error.name === "QuotaExceededError") {
+                throw new Error(
+                    "Everett.cache: storage quota exceeded; " +
+                    "you have exhausted sessionStorage's size limit." +
+                    "Everett could not cache " + key + "."
                 );
             }
         }
