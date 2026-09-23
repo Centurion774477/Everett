@@ -9,6 +9,7 @@ class Everett {
         );
     }
 
+    // returns true if the given setting is enabled
     static enabled(setting) {
         const configData = this.#getConfig();
 
@@ -16,17 +17,21 @@ class Everett {
             throw new Error("Everett.enabled: " + setting + " does not exist in config.");
         }
 
-        if (configData[setting] === true) {
-            return true;
-        } else {
-            return false;
-        }
+        return configData[setting] === true;
     }
 
+    // returns true if the given setting is disabled
     static disabled(setting) {
-        return this.enabled(setting);
+        const configData = this.#getConfig();
+
+        if (configData[setting] == null) {
+            throw new Error("Everett.enabled: " + setting + " does not exist in config.");
+        }
+
+        return configData[setting] === false;
     }
 
+    // returns the value of the given setting
     static value(setting) {
         const configData = this.#getConfig();
 
@@ -37,6 +42,7 @@ class Everett {
         return configData[setting];
     }
 
+    // sets the given setting to true
     static enable(setting) {
         const configData = this.#getConfig();
 
@@ -58,6 +64,7 @@ class Everett {
         return true;
     }
 
+    // sets the given setting to false
     static disable(setting) {
         const configData = this.#getConfig();
 
@@ -80,6 +87,7 @@ class Everett {
         return true;
     }
 
+    // adds the given settings to the config file
     static add(settings) {
         const config = this.#getConfig();
 
@@ -98,7 +106,9 @@ class Everett {
         return true;
     }
 
+    // creates the config file
     static initiate() {
+        // if already initiated
         if (sessionStorage.getItem(Everett.config) != null) {
             return;
         }
@@ -116,17 +126,14 @@ class Everett {
         return true;
     }
 
-    static cache(key, value, stringifyData = false) {
+    // adds the given value to the config file under the given key
+    static cache(key, value) {
         if (sessionStorage.getItem(key) != null) {
             return null;
         }
 
-        if (stringifyData === true) {
-            value = JSON.stringify(value);
-        }
-
         try {
-            sessionStorage.setItem(key, value);
+            sessionStorage.setItem(key, JSON.stringify(value));
         } catch (error) {
             if (error.name === "QuotaExceededError") {
                 throw new Error(
@@ -136,7 +143,6 @@ class Everett {
                 );
             }
         }
-
         return true;
     }
 }
